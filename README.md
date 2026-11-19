@@ -20,11 +20,11 @@ Unofficial; not affiliated with or endorsed by Pierre.
 
 </div>
 
-This package is the Svelte layer over Words: a `<Markdown>` component and a
-`markdown` attachment, with your own snippets drawn in place of links, images,
-code spans and code blocks, and kept, with their state, while the text around
-them streams. For Words itself (its options, plugins, styles, Mermaid, math),
-read [its docs](https://diffs.com/docs#words).
+This package adds a `<Markdown>` component and a `markdown` attachment on top
+of Words. You can pass Svelte snippets for links, images, code spans and code
+blocks; each one mounts in place and keeps its state while the text around it
+streams. Words' own options, plugins, styles, Mermaid and math are covered in
+[its docs](https://diffs.com/docs#words).
 
 ```sh
 bun add svelte-words @pierre/words
@@ -229,7 +229,7 @@ bun run verify   # build, svelte-check, publint, tests
 
 ## Releasing
 
-CI publishes to npm; nobody publishes by hand. Bump `version` in
+CI publishes to npm. Bump `version` in
 `package.json`, add its `CHANGELOG.md` entry, commit, then tag and push:
 
 ```sh
