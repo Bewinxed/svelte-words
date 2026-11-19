@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.0
+## 0.1.1
 
-First release, for `@pierre/words` 0.2.x (built and checked against 0.2.2).
+First release on npm (0.1.0 was never published), for `@pierre/words` 0.2.x (built and checked against 0.2.2).
 
 - `<Markdown>`: a streaming markdown component over Words' DOM renderer.
 - The `markdown` attachment, for an element of your own.
