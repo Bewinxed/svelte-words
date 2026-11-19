@@ -299,6 +299,19 @@ bun install
 bun run verify   # build, svelte-check, publint, tests
 ```
 
+## Releasing
+
+CI publishes to npm; nobody publishes by hand. Bump `version` in
+`package.json`, add its `CHANGELOG.md` entry, commit, then tag and push:
+
+```sh
+git tag v0.1.1 && git push origin main v0.1.1
+```
+
+The `Publish` workflow checks that the tag matches the version, runs
+`bun run verify`, and publishes through npm's trusted publishing (OIDC, no
+token), with a provenance attestation.
+
 ## Credits
 
 Built on [`@pierre/words`](https://github.com/pierrecomputer/pierre/tree/main/packages/words)

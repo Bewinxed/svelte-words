@@ -1,0 +1,35 @@
+# Publishes to npm when a version tag (v0.1.1, …) is pushed, through npm's
+# trusted publishing: GitHub's OIDC token stands in for an npm token, and npm
+# attaches a provenance attestation on its own. The package's npm settings name
+# this repository and this file (publish.yml) as its trusted publisher.
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      # Trusted publishing needs npm 11.5.1+ on Node 22.14+.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - run: bun install --frozen-lockfile
+      - name: The tag names the package's version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $version" >&2
+            exit 1
+          fi
+      # prepublishOnly runs build, svelte-check, publint and the tests first.
+      - run: npm publish --access public
