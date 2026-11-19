@@ -20,16 +20,14 @@ Unofficial; not affiliated with or endorsed by Pierre.
 
 </div>
 
-Words is Pierre's: it parses CommonMark, GFM and footnotes in WebAssembly,
-writes the result into the DOM and patches it in place as the text grows, so a
-reply streamed a few words at a time rewrites only what changed. This package
-is the Svelte layer over it: a `<Markdown>` component and a `markdown`
-attachment, with your own snippets drawing links, images, code spans and code
-blocks, mounted in place and kept, with their state, while the text around
-them streams.
+This package is the Svelte layer over Words: a `<Markdown>` component and a
+`markdown` attachment, with your own snippets drawn in place of links, images,
+code spans and code blocks, and kept, with their state, while the text around
+them streams. For Words itself (its options, plugins, styles, Mermaid, math),
+read [its docs](https://diffs.com/docs#words).
 
 ```sh
-npm install svelte-words @pierre/words
+bun add svelte-words @pierre/words
 ```
 
 | svelte-words | @pierre/words | svelte  |
@@ -38,23 +36,11 @@ npm install svelte-words @pierre/words
 
 ## Credits
 
-Words, and everything that makes it fast, is the work of
-[The Pierre Computer Company](https://github.com/pierrecomputer/pierre)
-([`@pierre/words`](https://github.com/pierrecomputer/pierre/tree/main/packages/words),
-Apache-2.0; demo and docs at [diffs.com/words](https://diffs.com/words)).
-
-**Pierre's:** the Markdown parser and the renderer, in WebAssembly; the DOM
-patching that makes streaming cheap, with its caret, fades and repair of
-unfinished syntax; code highlighting (`@pierre/words/highlights` on
-`@pierre/highlights`); math; the Mermaid plugin (`@pierre/words/mermaid`,
-drawing with Pele); the styles; and the benchmarks behind its speed claims.
-
-**Ours:** the Svelte glue only. The `<Markdown>` component and the `markdown`
-attachment over Words' `createDomRenderer` and `createHtmlRenderer`; your
-snippets mounted in place of links, images, code spans and code blocks;
-defaults through Svelte context; and server rendering with hydration. No
-source of Pierre's is copied here; Words is a peer dependency you install
-yourself.
+Words is the work of [The Pierre Computer Company](https://github.com/pierrecomputer/pierre)
+(Apache-2.0): the parser, the renderer, streaming, highlighting, Mermaid and
+math are theirs. Ours is only the Svelte glue: the component, the attachment,
+snippets, context defaults, and server rendering with hydration. Words is a
+peer dependency you install yourself; none of its source is copied here.
 
 ## A message
 
@@ -69,9 +55,7 @@ yourself.
 ```
 
 Pass the whole text so far as `source` on every update, and `streaming` while
-more of it is coming. While it streams, unfinished emphasis, code and links
-are completed for display (`repair`, on by default); once it stops, the text
-renders as written.
+more of it is coming.
 
 Every other attribute (`class` with Svelte's arrays and objects, `id`,
 `aria-*`, an `{@attach}`) goes on the root, a `<div data-markdown="root">`.
@@ -146,127 +130,30 @@ snippet to some of its elements; Words draws the rest.
 | `link`, `image`, `inlineCode`, `code` |         | Snippets, above.                                                                              |
 | `when`                                |         | Per snippet, which elements it takes.                                                         |
 
-`options` is Words' own `HtmlOptions` type: `components`, `plugins`,
-`urlTransform`, `math`, `cjk`, `controls`, `lineNumbers`, `allowedElements`,
-`disallowedElements`, `unwrapDisallowed`, `idPrefix`, and whatever a later
-Words adds. Each `<Markdown>` gets its own `idPrefix` unless you give one.
+`options` is Words' own `HtmlOptions`, passed through as is, so an option a
+later Words adds works here unchanged. Each `<Markdown>` gets its own
+`idPrefix` unless you give one.
 
 Everything is read reactively: change a prop and the output follows, rendered
 again only when a value changed. Nothing needs to be memoized. A new hook
 function applies to the output written after it, as in Words.
 
-Fades and the caret are drawn by Words' stylesheet; import
-`@pierre/words/styles.css` for its look, or write your own rules for
-`[data-markdown][data-animated="true"]` and `[data-markdown="caret"]`. Text
-already on screen when the element first renders never fades. When the stream
-ends, its last words fade in too, and the fades still running finish before
-the stream is marked as stopped.
+Text already on screen when the element first renders never fades. When the
+stream ends, its last words fade in too, and the fades still running finish
+before the stream is marked as stopped.
 
 ## Mermaid diagrams
 
-Words draws `mermaid` fences with [Pele](https://pele.run), which you install
-and pass in through `options.plugins.mermaid`. This package imports neither
-Pele nor `@pierre/words/mermaid`, so markdown without diagrams ships none of
-it.
+Pass Words' Mermaid plugin, built from your own [Pele](https://pele.run), as
+`options.plugins.mermaid` ([Words' Mermaid docs](https://diffs.com/docs#words-mermaid-diagrams)).
+This package imports neither, so markdown without diagrams ships none of it.
+Create the plugin once: Words redraws every diagram when it changes identity.
+To load `pele/lazy` only when a diagram appears, keep the plugin in `$state`
+and set it once Pele has loaded.
 
-```sh
-bun add pele
-```
-
-```svelte
-<script lang="ts">
-  import { createMermaidPlugin } from "@pierre/words/mermaid";
-  import { render } from "pele";
-  import { Markdown } from "svelte-words";
-
-  const mermaid = createMermaidPlugin({ render }, { links: false });
-  let { text, streaming } = $props();
-</script>
-
-<Markdown source={text} {streaming} options={{ plugins: { mermaid } }} {code} />
-```
-
-Create the plugin once, outside the render: Words compares it by identity
-and draws every diagram again when it changes. The second argument is Pele's
-render options.
-
-- While the fence is open, the diagram grows with each complete line, and a
-  line that does not parse keeps the last diagram that did. An open fence
-  with no diagram yet shows nothing.
-- A closed fence that does not parse is code: your `code` snippet draws it,
-  as it draws every other fence (`when.code` still chooses), and Words draws
-  it when you have none.
-- Your `code` snippet never receives a diagram Pele draws.
-- Words puts a diagram in its code block frame: a header naming `mermaid`
-  and, unless `controls` is off, its Copy and Download buttons. Style or hide
-  `[data-markdown="code-block"][data-language="mermaid"] > [data-markdown="code-header"]`.
-  The diagram itself is `[data-markdown="mermaid"]`; theme it with Pele's
-  `--pele-*` variables.
-
-### Loading Pele when a diagram appears
-
-`import { render } from "pele"` puts every diagram type in your bundle.
-`pele/lazy` loads each type on demand, but Words calls the plugin
-synchronously, so the plugin has to draw a type it is still loading as
-something (here, an empty diagram) and be replaced once the type is in. This
-module loads Pele the first time a source holds a mermaid fence, and each
-type the first time it is drawn:
-
-```ts
-// mermaid.svelte.ts
-import { createMermaidPlugin } from "@pierre/words/mermaid";
-import type { MermaidPlugin } from "svelte-words";
-
-type Pele = typeof import("pele/lazy");
-
-const MERMAID_FENCE = /^ {0,3}(?:`{3,}|~{3,})[ \t]*mermaid\b/mu;
-
-let pele: Promise<Pele> | undefined;
-let plugin = $state<MermaidPlugin>();
-const asked = new Set<string>();
-
-function pluginOf(lazy: Pele): MermaidPlugin {
-  return createMermaidPlugin(
-    {
-      render(code, options) {
-        let type: ReturnType<Pele["detectType"]> = null;
-        try {
-          type = lazy.detectType(code);
-        } catch {}
-        if (type !== null && !lazy.registered(type)) {
-          if (!asked.has(type)) {
-            asked.add(type);
-            lazy.load(type).finally(() => {
-              plugin = pluginOf(lazy);
-            });
-          }
-          return { svg: "" };
-        }
-        return lazy.render(code, options);
-      },
-    },
-    { links: false, images: false }
-  );
-}
-
-/** The plugin for `source`: none until it holds a mermaid fence and Pele is in. */
-export function mermaidFor(source: string): MermaidPlugin | undefined {
-  if (pele === undefined && MERMAID_FENCE.test(source)) {
-    pele = import("pele/lazy");
-    pele.then((lazy) => {
-      plugin = pluginOf(lazy);
-    });
-  }
-  return plugin;
-}
-```
-
-```svelte
-<Markdown source={text} {streaming} options={{ plugins: { mermaid: mermaidFor(text) } }} {code} />
-```
-
-Until Pele is in, a mermaid fence is code. Bundlers split `pele/lazy` and each
-diagram type into chunks of their own.
+One difference from Words: a closed fence that does not parse goes to your
+`code` snippet like any other fence, and your `code` snippet never receives a
+diagram Pele draws.
 
 ## Defaults for a subtree
 
