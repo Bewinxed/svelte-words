@@ -11,3 +11,6 @@ First release, for `@pierre/words` 0.2.x (built and checked against 0.2.2).
   around them streams.
 - `setMarkdownDefaults` for the options a subtree inherits.
 - `renderMarkdown` for server HTML, which the attachment adopts on hydration.
+- Mermaid through Words' own `plugins.mermaid`, with the Pele you pass in;
+  a closed diagram that does not parse goes to the `code` snippet. The
+  package imports neither Pele nor `@pierre/words/mermaid`.

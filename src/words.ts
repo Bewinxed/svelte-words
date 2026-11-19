@@ -14,6 +14,7 @@ export {
   defaultUrlTransform,
   escapeHtml,
   type HtmlOptions,
+  type MermaidPlugin,
 } from "@pierre/words/html";
 
 /** The caret Words draws at a stream's end. */

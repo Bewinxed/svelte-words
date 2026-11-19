@@ -21,4 +21,5 @@ export {
   defaultUrlTransform,
   escapeHtml,
   type HtmlOptions,
+  type MermaidPlugin,
 } from "./words.js";

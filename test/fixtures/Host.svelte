@@ -3,6 +3,8 @@
 
   export interface HostInput {
     animated?: boolean | AnimateOptions;
+    /** Mermaid through the README's lazy plugin (mermaid.svelte.ts). */
+    lazyMermaid?: boolean;
     options?: HtmlOptions;
     source: string;
     streaming?: boolean;
@@ -17,6 +19,7 @@
   } from "../../src/index.js";
   import { Markdown } from "../../src/index.js";
   import Block from "./Block.svelte";
+  import { mermaidFor } from "./mermaid.svelte.js";
 
   let { input }: { input: HostInput } = $props();
 
@@ -31,7 +34,13 @@
   source={input.source}
   streaming={input.streaming}
   animated={input.animated}
-  options={{ urlTransform, ...input.options }}
+  options={{
+    urlTransform,
+    ...input.options,
+    ...(input.lazyMermaid && {
+      plugins: { mermaid: mermaidFor(input.source) },
+    }),
+  }}
   {link}
   {code}
   {inlineCode}
