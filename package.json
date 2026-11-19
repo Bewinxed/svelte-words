@@ -1,0 +1,51 @@
+{
+  "name": "svelte-words",
+  "version": "0.1.0",
+  "description": "Streaming markdown for Svelte 5 on @pierre/words: a component and an attachment that patch the DOM as text arrives, with your snippets drawn in place of links, images, code spans and code blocks.",
+  "keywords": ["svelte", "markdown", "streaming", "llm", "words", "pierre"],
+  "homepage": "https://github.com/Bewinxed/svelte-words#readme",
+  "bugs": "https://github.com/Bewinxed/svelte-words/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bewinxed/svelte-words.git"
+  },
+  "license": "MIT",
+  "author": "Bewinxed",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "svelte": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "CHANGELOG.md"],
+  "scripts": {
+    "build": "svelte-package --input src --output dist",
+    "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "test": "vitest run",
+    "publint": "publint",
+    "verify": "bun run build && bun run check && bun run publint && bun run test",
+    "prepublishOnly": "bun run verify"
+  },
+  "peerDependencies": {
+    "@pierre/words": "^0.2.2",
+    "svelte": "^5.40.0"
+  },
+  "devDependencies": {
+    "@pierre/words": "0.2.2",
+    "@sveltejs/package": "^3.0.3",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^26.6.6",
+    "jsdom": "^31.0.1",
+    "publint": "^0.3.25",
+    "svelte": "^5.57.2",
+    "svelte-check": "^4.7.8",
+    "typescript": "^6.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}
