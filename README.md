@@ -121,6 +121,112 @@ already on screen when the element first renders never fades. When the stream
 ends, its last words fade in too, and the fades still running finish before
 the stream is marked as stopped.
 
+## Mermaid diagrams
+
+Words draws `mermaid` fences with [Pele](https://pele.run), which you install
+and pass in through `options.plugins.mermaid`. This package imports neither
+Pele nor `@pierre/words/mermaid`, so markdown without diagrams ships none of
+it.
+
+```sh
+bun add pele
+```
+
+```svelte
+<script lang="ts">
+  import { createMermaidPlugin } from "@pierre/words/mermaid";
+  import { render } from "pele";
+  import { Markdown } from "svelte-words";
+
+  const mermaid = createMermaidPlugin({ render }, { links: false });
+  let { text, streaming } = $props();
+</script>
+
+<Markdown source={text} {streaming} options={{ plugins: { mermaid } }} {code} />
+```
+
+Create the plugin once, outside the render: Words compares it by identity
+and draws every diagram again when it changes. The second argument is Pele's
+render options.
+
+- While the fence is open, the diagram grows with each complete line, and a
+  line that does not parse keeps the last diagram that did. An open fence
+  with no diagram yet shows nothing.
+- A closed fence that does not parse is code: your `code` snippet draws it,
+  as it draws every other fence (`when.code` still chooses), and Words draws
+  it when you have none.
+- Your `code` snippet never receives a diagram Pele draws.
+- Words puts a diagram in its code block frame: a header naming `mermaid`
+  and, unless `controls` is off, its Copy and Download buttons. Style or hide
+  `[data-markdown="code-block"][data-language="mermaid"] > [data-markdown="code-header"]`.
+  The diagram itself is `[data-markdown="mermaid"]`; theme it with Pele's
+  `--pele-*` variables.
+
+### Loading Pele when a diagram appears
+
+`import { render } from "pele"` puts every diagram type in your bundle.
+`pele/lazy` loads each type on demand, but Words calls the plugin
+synchronously, so the plugin has to draw a type it is still loading as
+something (here, an empty diagram) and be replaced once the type is in. This
+module loads Pele the first time a source holds a mermaid fence, and each
+type the first time it is drawn:
+
+```ts
+// mermaid.svelte.ts
+import { createMermaidPlugin } from "@pierre/words/mermaid";
+import type { MermaidPlugin } from "svelte-words";
+
+type Pele = typeof import("pele/lazy");
+
+const MERMAID_FENCE = /^ {0,3}(?:`{3,}|~{3,})[ \t]*mermaid\b/mu;
+
+let pele: Promise<Pele> | undefined;
+let plugin = $state<MermaidPlugin>();
+const asked = new Set<string>();
+
+function pluginOf(lazy: Pele): MermaidPlugin {
+  return createMermaidPlugin(
+    {
+      render(code, options) {
+        let type: ReturnType<Pele["detectType"]> = null;
+        try {
+          type = lazy.detectType(code);
+        } catch {}
+        if (type !== null && !lazy.registered(type)) {
+          if (!asked.has(type)) {
+            asked.add(type);
+            lazy.load(type).finally(() => {
+              plugin = pluginOf(lazy);
+            });
+          }
+          return { svg: "" };
+        }
+        return lazy.render(code, options);
+      },
+    },
+    { links: false, images: false }
+  );
+}
+
+/** The plugin for `source`: none until it holds a mermaid fence and Pele is in. */
+export function mermaidFor(source: string): MermaidPlugin | undefined {
+  if (pele === undefined && MERMAID_FENCE.test(source)) {
+    pele = import("pele/lazy");
+    pele.then((lazy) => {
+      plugin = pluginOf(lazy);
+    });
+  }
+  return plugin;
+}
+```
+
+```svelte
+<Markdown source={text} {streaming} options={{ plugins: { mermaid: mermaidFor(text) } }} {code} />
+```
+
+Until Pele is in, a mermaid fence is code. Bundlers split `pele/lazy` and each
+diagram type into chunks of their own.
+
 ## Defaults for a subtree
 
 ```svelte
@@ -176,8 +282,8 @@ minor it supports (above) and the peer range holds to it (`^0.2.2` is 0.2.x).
   `AnimateOptions`), passed through untouched: an option a new Words adds
   works with no release of ours.
 - The snippets ride on Words' documented hooks: `components` for links,
-  images and code spans, `plugins.renderers` for fenced blocks, and
-  `urlTransform`.
+  images and code spans, `plugins.renderers` for fenced blocks, your
+  `plugins.mermaid` for a diagram it shows as code, and `urlTransform`.
 - CI runs the build, `svelte-check`, `publint` and the tests on every push,
   and daily against `@pierre/words@latest`, so a Words release that breaks
   something shows up before anyone upgrades. Dependabot opens the bump.

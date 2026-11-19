@@ -4,6 +4,6 @@
  * release that moves something is fixed here.
  */
 import type { createDomRenderer } from "@pierre/words/html";
-export { type AnimateOptions, type CodeOptions, type Components, createDomRenderer, createHtmlRenderer, defaultUrlTransform, escapeHtml, type HtmlOptions, } from "@pierre/words/html";
+export { type AnimateOptions, type CodeOptions, type Components, createDomRenderer, createHtmlRenderer, defaultUrlTransform, escapeHtml, type HtmlOptions, type MermaidPlugin, } from "@pierre/words/html";
 /** The caret Words draws at a stream's end. */
 export type Caret = Parameters<ReturnType<typeof createDomRenderer>["update"]>[4];

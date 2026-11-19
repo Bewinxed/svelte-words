@@ -119,6 +119,23 @@ export function wordsOptionsOf(fallback) {
         }
         return placeholder("code", block, fallback ? `<pre><code>${escapeHtml(block.code)}</code></pre>` : "");
     };
+    /**
+     * The consumer's Mermaid plugin, with a diagram it shows as code (a
+     * closed one that does not parse) drawn by the `code` snippet, as any
+     * other fence is. Words takes `plugins.mermaid` before any renderer and
+     * renders everything again when it changes, so the wrapper is made once
+     * per plugin.
+     */
+    let diagrams;
+    const mermaidOf = (plugin) => {
+        if (diagrams?.plugin !== plugin) {
+            diagrams = {
+                plugin,
+                drawn: { render: (block) => plugin.render(block) ?? fence(block) },
+            };
+        }
+        return diagrams.drawn;
+    };
     return (input) => {
         current = input;
         const options = input.options ?? {};
@@ -145,6 +162,7 @@ export function wordsOptionsOf(fallback) {
             plugins: input.code
                 ? {
                     ...plugins,
+                    ...(plugins?.mermaid && { mermaid: mermaidOf(plugins.mermaid) }),
                     renderers: [
                         ...(plugins?.renderers ?? []),
                         { language: fenceLanguages(input.source), render: fence },
