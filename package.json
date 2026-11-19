@@ -1,7 +1,7 @@
 {
   "name": "svelte-words",
   "version": "0.1.0",
-  "description": "Streaming markdown for Svelte 5 on @pierre/words: a component and an attachment that patch the DOM as text arrives, with your snippets drawn in place of links, images, code spans and code blocks.",
+  "description": "Svelte 5 port of Pierre's @pierre/words streaming Markdown renderer (unofficial).",
   "keywords": ["svelte", "markdown", "streaming", "llm", "words", "pierre"],
   "homepage": "https://github.com/Bewinxed/svelte-words#readme",
   "bugs": "https://github.com/Bewinxed/svelte-words/issues",
