@@ -1,0 +1,22 @@
+# The same checks against the newest @pierre/words, daily, so a Words
+# release that breaks this package shows up before anyone upgrades.
+name: Upstream Words
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  verify-latest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun add --dev @pierre/words@latest
+      - run: bun pm ls | grep @pierre/words
+      - run: bun run build
+      - run: bun run check
+      - run: bun run publint
+      - run: bun run test
