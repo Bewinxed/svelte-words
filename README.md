@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src=".github/assets/social-preview.png" alt="@pierre/words for Svelte 5: an unofficial Svelte port of Words by The Pierre Computer Company" width="640">
+
 # Words for Svelte
 
 A Svelte 5 port of Pierre's [Words](https://diffs.com/words) ([`@pierre/words`](https://github.com/pierrecomputer/pierre/tree/main/packages/words)),
