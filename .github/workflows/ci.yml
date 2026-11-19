@@ -16,3 +16,44 @@ jobs:
       - run: bun run check
       - run: bun run publint
       - run: bun run test
+
+  # The release branch holds the package as `bun pm pack` makes it, dist
+  # built, so a git dependency installs it with no build step (bun installs
+  # no devDependencies before a git dependency's prepare script). A consumer
+  # pins one of its commits: github:Bewinxed/svelte-words#<release sha>.
+  # Each release commit is the child of the last; the branch is never rewritten.
+  release:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bun pm pack --destination "$RUNNER_TEMP/pack"
+      - name: Commit the packed package to the release branch
+        run: |
+          set -euo pipefail
+          tree="$RUNNER_TEMP/release"
+          if git ls-remote --exit-code --heads origin release >/dev/null; then
+            git worktree add -B release "$tree" origin/release
+          else
+            git worktree add --orphan -b release "$tree"
+          fi
+          find "$tree" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          tar -xzf "$RUNNER_TEMP"/pack/*.tgz -C "$tree" --strip-components=1
+          cd "$tree"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "release already holds this package"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898283+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Release of ${GITHUB_SHA}"
+          git push origin release
