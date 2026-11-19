@@ -1,0 +1,15 @@
+{
+  "name": "svelte-words-social",
+  "private": true,
+  "type": "module",
+  "description": "The repository's social preview, drawn by svelte-words itself and captured with Chromium. Run `bun install && bun run render` here.",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@pierre/highlights": "^0.5.1",
+    "playwright": "^1.65.1"
+  }
+}

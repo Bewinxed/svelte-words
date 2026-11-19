@@ -1,4 +1,19 @@
+<div align="center">
+
 # svelte-words
+
+Streaming markdown for Svelte 5, on @pierre/words.
+
+[![CI](https://img.shields.io/github/actions/workflow/status/Bewinxed/svelte-words/ci.yml?branch=main&style=flat-square&labelColor=171717&label=ci)](https://github.com/Bewinxed/svelte-words/actions/workflows/ci.yml)
+[![Upstream Words](https://img.shields.io/github/actions/workflow/status/Bewinxed/svelte-words/upstream.yml?branch=main&style=flat-square&labelColor=171717&label=%40pierre%2Fwords%40latest)](https://github.com/Bewinxed/svelte-words/actions/workflows/upstream.yml)
+[![npm](https://img.shields.io/npm/v/svelte-words?style=flat-square&labelColor=171717&color=ff3e00&label=npm)](https://www.npmjs.com/package/svelte-words)
+[![Downloads](https://img.shields.io/npm/dm/svelte-words?style=flat-square&labelColor=171717&color=404040&label=downloads)](https://www.npmjs.com/package/svelte-words)
+[![Size](https://img.shields.io/npm/unpacked-size/svelte-words?style=flat-square&labelColor=171717&color=404040&label=size)](https://www.npmjs.com/package/svelte-words?activeTab=code)
+[![MIT](https://img.shields.io/github/license/Bewinxed/svelte-words?style=flat-square&labelColor=171717&color=404040)](https://github.com/Bewinxed/svelte-words/blob/main/LICENSE)
+[![Svelte 5](https://img.shields.io/badge/svelte-5-ff3e00?style=flat-square&labelColor=171717&logo=svelte&logoColor=ff3e00)](https://svelte.dev)
+[![Built on @pierre/words](https://img.shields.io/badge/built%20on-%40pierre%2Fwords-fafafa?style=flat-square&labelColor=171717)](https://diffs.com/words)
+
+</div>
 
 Streaming markdown for Svelte 5, on [`@pierre/words`](https://diffs.com/docs#words):
 CommonMark, GFM and footnotes parsed in WebAssembly, written into the DOM and
