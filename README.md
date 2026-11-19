@@ -1,8 +1,11 @@
 <div align="center">
 
-# svelte-words
+# Words for Svelte
 
-Streaming markdown for Svelte 5, on @pierre/words.
+A Svelte 5 port of Pierre's [Words](https://diffs.com/words) ([`@pierre/words`](https://github.com/pierrecomputer/pierre/tree/main/packages/words)),
+the streaming Markdown renderer by The Pierre Computer Company.
+
+Unofficial; not affiliated with or endorsed by Pierre.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/Bewinxed/svelte-words/ci.yml?branch=main&style=flat-square&labelColor=171717&label=ci)](https://github.com/Bewinxed/svelte-words/actions/workflows/ci.yml)
 [![Upstream Words](https://img.shields.io/github/actions/workflow/status/Bewinxed/svelte-words/upstream.yml?branch=main&style=flat-square&labelColor=171717&label=%40pierre%2Fwords%40latest)](https://github.com/Bewinxed/svelte-words/actions/workflows/upstream.yml)
@@ -15,11 +18,12 @@ Streaming markdown for Svelte 5, on @pierre/words.
 
 </div>
 
-Streaming markdown for Svelte 5, on [`@pierre/words`](https://diffs.com/docs#words):
-CommonMark, GFM and footnotes parsed in WebAssembly, written into the DOM and
-patched in place as the text grows, so a reply streamed a few words at a time
-rewrites only what changed. Your own snippets draw links, images, code spans
-and code blocks, and stay mounted, with their state, while the text around
+Words is Pierre's: it parses CommonMark, GFM and footnotes in WebAssembly,
+writes the result into the DOM and patches it in place as the text grows, so a
+reply streamed a few words at a time rewrites only what changed. This package
+is the Svelte layer over it: a `<Markdown>` component and a `markdown`
+attachment, with your own snippets drawing links, images, code spans and code
+blocks, mounted in place and kept, with their state, while the text around
 them streams.
 
 ```sh
@@ -29,6 +33,26 @@ npm install svelte-words @pierre/words
 | svelte-words | @pierre/words | svelte  |
 | ------------ | ------------- | ------- |
 | 0.1.x        | 0.2.x         | ≥ 5.40  |
+
+## Credits
+
+Words, and everything that makes it fast, is the work of
+[The Pierre Computer Company](https://github.com/pierrecomputer/pierre)
+([`@pierre/words`](https://github.com/pierrecomputer/pierre/tree/main/packages/words),
+Apache-2.0; demo and docs at [diffs.com/words](https://diffs.com/words)).
+
+**Pierre's:** the Markdown parser and the renderer, in WebAssembly; the DOM
+patching that makes streaming cheap, with its caret, fades and repair of
+unfinished syntax; code highlighting (`@pierre/words/highlights` on
+`@pierre/highlights`); math; the Mermaid plugin (`@pierre/words/mermaid`,
+drawing with Pele); the styles; and the benchmarks behind its speed claims.
+
+**Ours:** the Svelte glue only. The `<Markdown>` component and the `markdown`
+attachment over Words' `createDomRenderer` and `createHtmlRenderer`; your
+snippets mounted in place of links, images, code spans and code blocks;
+defaults through Svelte context; and server rendering with hydration. No
+source of Pierre's is copied here; Words is a peer dependency you install
+yourself.
 
 ## A message
 
@@ -326,12 +350,6 @@ git tag v0.1.1 && git push origin main v0.1.1
 The `Publish` workflow checks that the tag matches the version, runs
 `bun run verify`, and publishes through npm's trusted publishing (OIDC, no
 token), with a provenance attestation.
-
-## Credits
-
-Built on [`@pierre/words`](https://github.com/pierrecomputer/pierre/tree/main/packages/words)
-by The Pierre Computer Company (Apache-2.0), through its `createDomRenderer`
-and `createHtmlRenderer`. No source of theirs is copied here.
 
 ## License
 

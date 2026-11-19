@@ -16,22 +16,3 @@ export function debounce(fn, ms = 200) {
 }
 
 input.oninput = debounce((e) => sea`;
-
-/** The component that draws it, as a reader would write it. */
-export const SOURCE = `\`\`\`svelte
-<script lang="ts">
-  import { Markdown } from "svelte-words";
-
-  let { reply } = $props();
-</script>
-
-<Markdown
-  source={reply.text}
-  streaming={reply.open}
-  caret="block"
-  animated
-/>
-\`\`\``;
-
-/** The one call, as the pair variant shows it above its output. */
-export const CALL = "```svelte\n<Markdown source={text} streaming />\n```";

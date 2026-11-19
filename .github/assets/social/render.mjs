@@ -1,6 +1,6 @@
 // Renders the social preview: the card drawn by svelte-words in Chromium,
 // captured at 2x and downscaled to 1280x640 so the type stays crisp.
-// node render.mjs [variant ...]   (stream, source, pair; default: all)
+// node render.mjs [variant ...]   (words, package, credit; default: all)
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,7 +10,7 @@ import { createServer } from "vite";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, "../../..");
-const variants = process.argv.slice(2).length ? process.argv.slice(2) : ["stream", "source", "pair"];
+const variants = process.argv.slice(2).length ? process.argv.slice(2) : ["words", "package", "credit"];
 
 const server = await createServer({
   configFile: false,

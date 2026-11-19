@@ -2,55 +2,44 @@
   import { Markdown } from "svelte-words";
   import { createHighlightsPlugin } from "@pierre/words/highlights";
   import pierreDark from "@pierre/highlights/themes/pierre-dark";
-  import { CALL, REPLY, SOURCE } from "./content.js";
+  import { REPLY } from "./content.js";
 
-  /** stream: the reply rendered mid-stream. source: the component that draws it. pair: the call above its output. */
+  /**
+   * The left side's headline. words: "Words for Svelte" leads. package: Pierre's
+   * package name leads. credit: the credit to Pierre is the headline.
+   * The right side is always the reply rendered mid-stream by svelte-words.
+   */
   let { variant }: { variant: string } = $props();
 
   const options = { plugins: { code: createHighlightsPlugin({ theme: pierreDark }) } };
 </script>
 
-{#snippet mark()}
-  <div class="mark" aria-hidden="true">
-    <span class="tile hash">#</span><span class="tile caret"><i></i></span>
-  </div>
-{/snippet}
-
 <main class="card {variant}">
   <section class="side">
-    {@render mark()}
-    <h1><span class="thin">svelte-</span>words</h1>
-    <p class="tagline">Streaming markdown for Svelte&nbsp;5, on @pierre/words.</p>
-    <code class="install">npm i svelte-words</code>
+    <p class="kicker">Unofficial Svelte port</p>
+    {#if variant === "package"}
+      <h1 class="pkg">@pierre/words</h1>
+      <p class="for">for Svelte&nbsp;5</p>
+    {:else if variant === "credit"}
+      <h1 class="credit-head">Words, by The Pierre Computer Company.</h1>
+      <p class="sub">Their streaming Markdown renderer, ported to Svelte&nbsp;5.</p>
+    {:else}
+      <h1>Words for Svelte</h1>
+      <p class="sub">A Svelte&nbsp;5 port of @pierre/words by The Pierre Computer Company.</p>
+    {/if}
+    <footer>
+      <code class="install">npm i svelte-words</code>
+      <p class="byline">Words by The Pierre Computer Company<br />diffs.com/words</p>
+    </footer>
   </section>
 
   <section class="panel">
-    {#if variant === "source"}
-      <header><span class="file">Reply.svelte</span></header>
-      <div class="source">
-        <Markdown source={SOURCE} {options} />
-      </div>
-    {:else}
-      <header>
-        {#if variant === "pair"}
-          <span class="file">Reply.svelte</span>
-        {:else}
-          <span class="dot"></span><span class="file">assistant</span><span class="live">streaming</span>
-        {/if}
-      </header>
-      {#if variant === "pair"}
-        <div class="call"><Markdown source={CALL} {options} /></div>
-      {/if}
-      <div class="reply">
-        <!-- Under the call there is room for less of the reply: cut it a few lines sooner. -->
-        <Markdown
-          source={variant === "pair" ? REPLY.slice(0, REPLY.indexOf(", ms);") + 4) : REPLY}
-          streaming
-          caret="block"
-          {options}
-        />
-      </div>
-    {/if}
+    <header>
+      <span class="dot"></span><span class="file">assistant</span><span class="live">streaming</span>
+    </header>
+    <div class="reply">
+      <Markdown source={REPLY} streaming caret="block" {options} />
+    </div>
   </section>
 </main>
 
@@ -71,58 +60,61 @@
     overflow: hidden;
   }
   .side {
-    position: relative;
-    padding: 72px 64px 0 85px;
-  }
-  .mark {
     display: flex;
-    gap: 3px;
+    flex-direction: column;
+    padding: 72px 64px 60px 85px;
   }
-  .tile {
-    width: 48px;
-    height: 48px;
-    display: grid;
-    place-items: center;
-  }
-  .hash {
-    background: #fafafa;
-    color: #171717;
-    border-radius: 8px 0 0 8px;
-    font: 700 34px/1 "Inter Variable", sans-serif;
-  }
-  .caret {
-    background: #ff3e00;
-    border-radius: 0 8px 8px 0;
-  }
-  .caret i {
-    width: 14px;
-    height: 26px;
-    background: #fafafa;
+  .kicker {
+    margin: 0;
+    font: 500 22px/1 "Inter Variable", sans-serif;
+    color: #a3a3a3;
   }
   h1 {
-    margin: 118px 0 0;
-    font-size: 76px;
+    margin: 60px 0 0;
+    font-size: 72px;
     font-weight: 700;
     letter-spacing: -0.035em;
-    line-height: 1;
+    line-height: 1.02;
   }
-  .thin {
+  .pkg {
+    font: 600 60px/1 "Geist Mono Variable", monospace;
+    letter-spacing: -0.04em;
+  }
+  .for {
+    margin: 14px 0 0;
+    font-size: 60px;
     font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #c4c4c4;
   }
-  .tagline {
+  .credit-head {
+    margin-top: 64px;
+    font-size: 54px;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .sub {
     margin: 22px 0 0;
-    max-width: 22ch;
-    font-size: 31px;
-    line-height: 1.45;
+    max-width: 24ch;
+    font-size: 27px;
+    line-height: 1.4;
     letter-spacing: -0.01em;
     color: #c4c4c4;
   }
+  footer {
+    margin-top: auto;
+  }
   .install {
-    position: absolute;
-    left: 85px;
-    bottom: 64px;
-    font: 400 32px/1 "Geist Mono Variable", monospace;
-    color: #a3a3a3;
+    display: block;
+    font: 400 28px/1 "Geist Mono Variable", monospace;
+    color: #e5e5e5;
+  }
+  .byline {
+    margin: 18px 0 0;
+    font-size: 19px;
+    line-height: 1.4;
+    color: #8a8a8a;
   }
 
   .panel {
@@ -155,26 +147,6 @@
     margin-left: auto;
     font: 400 18px/1 "Geist Mono Variable", monospace;
     color: #737373;
-  }
-  .call {
-    border-bottom: 1px solid #262626;
-    padding-bottom: 14px;
-  }
-  .call :global([data-markdown="code-block"]) {
-    border: 0;
-    border-radius: 0;
-    margin: 0;
-  }
-  .call :global([data-markdown="code-header"]) {
-    display: none;
-  }
-  .call :global([data-markdown="code-block"] pre) {
-    padding: 0 40px 0 28px;
-    font: 400 21px/1.75 "Geist Mono Variable", monospace;
-    gap: 28px;
-  }
-  .pair .reply {
-    padding-top: 28px;
   }
 
   .reply {
@@ -210,23 +182,7 @@
   .reply :global([data-markdown="code-header"]) {
     display: none;
   }
-  .reply :global([data-markdown="code-block"] pre),
-  .source :global([data-markdown="code-block"] pre) {
-    padding: 18px 40px 0 28px;
-    font: 400 19px/1.75 "Geist Mono Variable", monospace;
-    max-height: none;
-    gap: 28px;
-    overflow: hidden;
-  }
-  .source :global([data-markdown="code-block"]) {
-    border: 0;
-    border-radius: 0;
-    margin: 0;
-  }
-  .source :global([data-markdown="code-header"]) {
-    display: none;
-  }
-  .source :global([data-markdown="code-block"] pre) {
+  .reply :global([data-markdown="code-block"] pre) {
     font-size: 20px;
     padding-top: 4px;
   }
