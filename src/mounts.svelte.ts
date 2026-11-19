@@ -17,13 +17,13 @@
  * loses a text node that way is mounted again.
  */
 import { mount, unmount } from "svelte";
+import { SLOT, VALUE } from "./render.js";
 import Slot from "./Slot.svelte";
 import type {
   MarkdownSnippetKind,
   MarkdownSnippets,
   Slotted,
 } from "./types.js";
-import { SLOT, VALUE } from "./render.js";
 
 const KINDS: readonly MarkdownSnippetKind[] = [
   "link",

@@ -15,8 +15,8 @@
   import { getAllContexts, untrack } from "svelte";
   import { markdownDefaults } from "./defaults.js";
   import { markdown } from "./markdown.svelte.js";
-  import type { MarkdownInput } from "./types.js";
   import { renderMarkdown } from "./render.js";
+  import type { MarkdownInput } from "./types.js";
 
   let {
     source,
