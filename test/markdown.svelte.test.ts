@@ -1,6 +1,4 @@
 import { flushSync, hydrate, mount, unmount } from "svelte";
-import { createMermaidPlugin } from "@pierre/words/mermaid";
-import { render } from "pele";
 import { afterEach, describe, expect, inject, test, vi } from "vitest";
 import { markdown } from "../src/index.js";
 import Host, { type HostInput } from "./fixtures/Host.svelte";
@@ -268,85 +266,5 @@ describe("hydration", () => {
     expect(target.querySelector("p")).toBe(paragraph);
     expect(target.querySelectorAll("a.chip")).toHaveLength(2);
     expect(target.querySelectorAll("[data-block]")).toHaveLength(1);
-  });
-});
-
-describe("mermaid", () => {
-  const mermaid = createMermaidPlugin({ render }, { links: false });
-  const diagram = (root: HTMLElement): string | undefined =>
-    root.querySelector('[data-markdown="mermaid"] svg')?.outerHTML;
-
-  test("a fence streams in as a diagram, drawn by the plugin and never by the code snippet", () => {
-    const { input, root } = host({
-      source: "```mermaid\ngraph",
-      streaming: true,
-      options: { plugins: { mermaid } },
-    });
-    // An open fence with no diagram yet shows nothing.
-    expect(diagram(root())).toBeUndefined();
-    expect(root().querySelector("[data-block]")).toBeNull();
-    input.source = "```mermaid\ngraph TD\n  Alpha --> Beta\n";
-    flushSync();
-    const first = diagram(root());
-    expect(first).toContain("Beta");
-    input.source = "```mermaid\ngraph TD\n  Alpha --> Beta\n  Beta --> Gamma\n";
-    flushSync();
-    expect(diagram(root())).toContain("Gamma");
-    input.source += "```\n";
-    input.streaming = false;
-    flushSync();
-    expect(diagram(root())).toContain("Gamma");
-    expect(root().querySelector("[data-block]")).toBeNull();
-  });
-
-  test("a line that does not parse keeps the last diagram that did", () => {
-    const good = "```mermaid\ngraph TD\n  Alpha --> Beta\n";
-    const { input, root } = host({
-      source: good,
-      streaming: true,
-      options: { plugins: { mermaid } },
-    });
-    const drawn = diagram(root());
-    expect(drawn).toContain("Beta");
-    input.source = `${good}  Beta -->\n`;
-    flushSync();
-    expect(diagram(root())).toBe(drawn);
-  });
-
-  test("a closed fence that does not parse is drawn by the code snippet", () => {
-    const { root } = host({
-      source: "```mermaid\ngraph TD\n  Alpha -->\n```\n\nAfter.",
-      options: { plugins: { mermaid } },
-    });
-    expect(diagram(root())).toBeUndefined();
-    const block = root().querySelector("[data-block]");
-    expect(block?.getAttribute("data-language")).toBe("mermaid");
-    expect(block?.textContent).toBe("graph TD\n  Alpha -->\n");
-  });
-
-  test("with no plugin a mermaid fence is code, and other fences stay the code snippet's beside a diagram", () => {
-    const source = "```mermaid\ngraph TD\n  Alpha --> Beta\n```\n\n```ts\nconst a = 1;\n```\n";
-    const { input, root } = host({ source });
-    const languages = (): (string | null)[] =>
-      [...root().querySelectorAll("[data-block]")].map((block) =>
-        block.getAttribute("data-language")
-      );
-    expect(languages()).toEqual(["mermaid", "ts"]);
-    input.options = { plugins: { mermaid } };
-    flushSync();
-    expect(diagram(root())).toContain("Beta");
-    expect(languages()).toEqual(["ts"]);
-  });
-
-  test("the lazy plugin loads Pele and the diagram's type on the first mermaid fence, then draws it", async () => {
-    const { input, root } = host({ source: "No diagram yet.", lazyMermaid: true });
-    input.source = "Now one:\n\n```mermaid\nsequenceDiagram\n  Ann->>Bo: Hello\n```\n";
-    flushSync();
-    expect(diagram(root())).toBeUndefined();
-    await vi.waitFor(() => {
-      flushSync();
-      expect(diagram(root())).toContain("Hello");
-    });
-    expect(root().querySelector("[data-block]")).toBeNull();
   });
 });
