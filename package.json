@@ -1,6 +1,6 @@
 {
   "name": "svelte-words",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Svelte 5 port of Pierre's @pierre/words streaming Markdown renderer (unofficial).",
   "keywords": ["svelte", "markdown", "streaming", "llm", "words", "pierre"],
   "homepage": "https://github.com/Bewinxed/svelte-words#readme",
@@ -32,11 +32,11 @@
     "prepublishOnly": "bun run verify"
   },
   "peerDependencies": {
-    "@pierre/words": "^0.2.2",
+    "@pierre/words": "^0.3.0",
     "svelte": "^5.40.0"
   },
   "devDependencies": {
-    "@pierre/words": "0.2.2",
+    "@pierre/words": "0.3.0",
     "@sveltejs/package": "^3.0.3",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@types/node": "^26.6.6",
