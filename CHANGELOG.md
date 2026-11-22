@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0
+
+For `@pierre/words` 0.3.x (built and checked against 0.3.0).
+
+- Words 0.3.0 joins only the text a fade moved when the fade ends, so it
+  leaves a snippet's DOM alone (pierrecomputer/pierre#1308). The watch that
+  mounted a snippet again when a text node left it is gone: it also fired
+  when Svelte took out a text node of its own, such as the empty one a
+  component starting with `{#if}` leaves behind it, and mounted the snippet
+  again, losing its state.
+
 ## 0.1.1
 
 First release published by CI, for `@pierre/words` 0.2.x (built and checked

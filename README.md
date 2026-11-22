@@ -32,6 +32,7 @@ bun add svelte-words @pierre/words
 
 | svelte-words | @pierre/words | svelte  |
 | ------------ | ------------- | ------- |
+| 0.2.x        | 0.3.x         | ≥ 5.40  |
 | 0.1.x        | 0.2.x         | ≥ 5.40  |
 
 ## Credits
@@ -201,7 +202,7 @@ attachment takes over later.
 ## Updating Words
 
 `@pierre/words` is a 0.x release, so each of our releases names the Words
-minor it supports (above) and the peer range holds to it (`^0.2.2` is 0.2.x).
+minor it supports (above) and the peer range holds to it (`^0.3.0` is 0.3.x).
 
 - `src/words.ts` is the only module that imports `@pierre/words`, and only its
   public `@pierre/words/html` entry. A Words release that moves something is

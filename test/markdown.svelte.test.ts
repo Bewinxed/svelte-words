@@ -2,6 +2,8 @@ import { flushSync, hydrate, mount, unmount } from "svelte";
 import { afterEach, describe, expect, inject, test, vi } from "vitest";
 import { markdown } from "../src/index.js";
 import Host, { type HostInput } from "./fixtures/Host.svelte";
+import ToggleHost from "./fixtures/ToggleHost.svelte";
+import { toggle } from "./fixtures/toggle.svelte.js";
 import { blocks } from "./fixtures/registry.js";
 import { REPLY } from "./fixtures/source.js";
 
@@ -150,12 +152,32 @@ describe("settle", () => {
     input.source = "See [](app:user/2) and more words again";
     flushSync();
     vi.advanceTimersByTime(100);
-    // Words merges the paragraph's text as its fade ends, the chip's empty
-    // text node included; the chip is mounted again, and draws what comes.
+    // The fade ends around the chip, whose text node is empty; it stays the
+    // chip's, and draws what comes.
     await Promise.resolve();
     input.source = "See [back](app:user/3) and more words again";
     flushSync();
     expect(root().querySelector("a.chip")?.textContent).toBe("back");
+  });
+});
+
+describe("snippets", () => {
+  test("a snippet whose component hides a block stays mounted", async () => {
+    const target = document.createElement("div");
+    document.body.append(target);
+    const app = mount(ToggleHost, { target });
+    flushSync();
+    cleanups.push(() => unmount(app));
+    const chip = target.querySelector("a.chip");
+    expect(toggle.mounts).toBe(1);
+    // The dot starts with an `{#if}`: Svelte takes out its empty text
+    // anchor with it.
+    toggle.dot = false;
+    flushSync();
+    await Promise.resolve();
+    expect(toggle.mounts).toBe(1);
+    expect(target.querySelector("a.chip")).toBe(chip);
+    expect(target.querySelector("[data-dot]")).toBeNull();
   });
 });
 
